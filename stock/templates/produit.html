@@ -1,0 +1,139 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+{% block title %}Bienvenue sur {% endblock %}
+
+{% block css %}
+{% endblock css %}
+
+{% block toolbar %}
+<!-- Toolbar section for navigation and page title -->
+<div id="kt_app_toolbar" class="app-toolbar" style="height: 50px">
+    <!--begin::Toolbar container-->
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <!--begin::Page title-->
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <!-- Navigation tabs for different views -->
+            <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8 mt-8">
+                <!-- Tab item for creating a product -->
+                <li class="nav-item text-end">
+                    <a class="nav-link text-active-primary active" data-bs-toggle="tab"
+                       href="#kt_customer_view_overview_tab">Ajouter un Produit</a>
+                </li>
+            </ul>
+        </div>
+        <!--end::Page title-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post" action="">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="code_interne">Code Interne:</label>
+        <input type="text" id="code_interne" name="code_interne" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="marque">Marque:</label>
+        <input type="text" id="marque" name="marque" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="date_inventaire">Date d'Inventaire:</label>
+        <input type="date" id="date_inventaire" name="date_inventaire" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="categorie">Catégorie:</label>
+        <select id="categorie" name="categorie" class="form-control" required>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.nom_cat }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="utilisateur">Utilisateur:</label>
+        <select id="utilisateur" name="utilisateur" class="form-control" required>
+            {% for util in utilisateurs %}
+                <option value="{{ util.id }}">{{ util.nom_util }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="site">Site:</label>
+        <select id="site" name="site" class="form-control" required>
+            {% for site in sites %}
+                <option value="{{ site.id }}">{{ site.nom }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+</form>
+
+{% if success_message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            alert('{{ success_message|escapejs }}');
+        });
+    </script>
+{% endif %}
+
+{% if error_message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            alert('{{ error_message|escapejs }}');
+        });
+    </script>
+{% endif %}
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    document.getElementById('vendeur_type').addEventListener('change', function() {
+        const type = this.value;
+        window.location.search = `vendeur_type=${type}`;
+    });
+
+    document.getElementById('combUtil').addEventListener('change', function() {
+        document.getElementById('valeur').value = '';
+        calculateResults();
+    });
+
+    function calculateResults() {
+        const value = parseFloat(document.getElementById('valeur').value) || 0;
+        const paliers = Array.from(document.querySelectorAll('.palMin')).map((minElem, index) => {
+            return {
+                min: parseFloat(minElem.value) || 0,
+                max: parseFloat(document.querySelectorAll('.palMax')[index].value) || 0,
+                com: parseFloat(document.querySelectorAll('.com')[index].value) || 0
+            };
+        });
+
+        let total = 0;
+        paliers.forEach((palier, index) => {
+            const min = palier.min;
+            const max = palier.max;
+            const com = palier.com;
+            let result = 0;
+            if (value > min) {
+                const rangeEnd = Math.min(value, max);
+                result = (rangeEnd - min) * com;
+                total += result;
+            }
+            document.getElementById(`resultat${index + 1}`).value = result.toFixed(2);
+        });
+        document.getElementById('total').innerText = total.toFixed(2);
+    }
+
+    function showSaveMessage() {
+        const vendeurSelect = document.getElementById('combUtil');
+        if (vendeurSelect.value === '') {
+            alert('Veuillez choisir un vendeur.');
+            return false;
+        }
+
+        alert('Les données ont été enregistrées avec succès.');
+        return true;
+    }
+</script>
+{% endblock javascript %}

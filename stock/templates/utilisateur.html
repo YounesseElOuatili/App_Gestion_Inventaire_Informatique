@@ -1,0 +1,75 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+{% block title %}Ajouter un Utilisateur{% endblock %}
+
+{% block css %}
+<!-- Vous pouvez ajouter des liens vers des fichiers CSS supplémentaires ici -->
+{% endblock css %}
+
+{% block toolbar %}
+<!-- Toolbar section for navigation and page title -->
+<div id="kt_app_toolbar" class="app-toolbar" style="height: 50px">
+    <!--begin::Toolbar container-->
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <!--begin::Page title-->
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <!-- Navigation tabs for different views -->
+            <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8 mt-8">
+                <!-- Tab item for adding a user -->
+                <li class="nav-item text-end">
+                    <a class="nav-link text-active-primary active" data-bs-toggle="tab"
+                       href="#kt_customer_view_overview_tab">Ajouter un Utilisateur</a>
+                </li>
+            </ul>
+        </div>
+        <!--end::Page title-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post" action="" onsubmit="return showSaveMessage()">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nom_util">Nom de l'Utilisateur:</label>
+        <input type="text" id="nom_util" name="nom_util" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="site">Site:</label>
+        <select id="site" name="site" class="form-control" required>
+            {% for site in sites %}
+                <option value="{{ site.id }}">{{ site.nom }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+</form>
+
+{% if success_message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            alert('{{ success_message|escapejs }}');
+        });
+    </script>
+{% endif %}
+{% endblock content %}
+
+{% block javascript %}
+<!-- JavaScript for handling dynamic content and loaders -->
+<script>
+    function showSaveMessage() {
+        const nomUtil = document.getElementById('nom_util').value.trim();
+
+
+        if (nomUtil === '' ) {
+            alert('Veuillez remplir tous les champs.');
+            return false; // Empêche la soumission du formulaire
+        }
+
+        alert('L\'utilisateur a été ajouté avec succès.');
+        return true; // Permet la soumission du formulaire
+    }
+</script>
+{% endblock javascript %}
