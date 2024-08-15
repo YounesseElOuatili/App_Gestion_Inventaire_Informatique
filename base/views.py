@@ -7,7 +7,7 @@ from django.views.generic.edit import FormView
 @login_required(login_url='/login/')
 def Dashboard(request):
     
-    return render(request, 'liste_prod.html')
+    return render(request, 'dashboard.html')
 
 def logout(request):
     auth_logout(request)
