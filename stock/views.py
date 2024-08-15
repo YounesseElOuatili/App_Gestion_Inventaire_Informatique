@@ -170,16 +170,6 @@ def liste_produits_pdf(request):
 
 # stock/views.py
 # views.py
-from django.shortcuts import render
-from django.db.models import Count
-from .models import Categorie, Produit
 
-def dashboard(request):
-    # Fetch categories and the count of products per category
-    categories = Categorie.objects.annotate(product_count=Count('produit')).values('nom_cat', 'product_count')
 
-    context = {
-        'categories': list(categories),  # Convert to list for JSON serialization
-    }
-    return render(request, 'dashboard.html', context)
 

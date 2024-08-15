@@ -10,5 +10,5 @@ urlpatterns = [
     path('add_utilisateur/', views.add_utilisateur, name='add_utilisateur'),
     path('liste_utilisateurs/', views.liste_utilisateurs, name='liste_utilisateurs'),
     path('liste-produits-pdf/', views.liste_produits_pdf, name='liste_produits_pdf'),
-    path('', views.dashboard, name='dashboard'),
+    
 ]

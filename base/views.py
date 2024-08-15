@@ -6,7 +6,8 @@ from django.views.generic.edit import FormView
 
 @login_required(login_url='/login/')
 def Dashboard(request):
-    return render(request, 'dashboard.html')
+    
+    return render(request, 'liste_prod.html')
 
 def logout(request):
     auth_logout(request)
@@ -21,6 +22,8 @@ class LoginView(FormView):
     extra_context = None
 
 
-def profile_view(request):
-    # Assurez-vous que le modèle 'profile.html' existe
-    return render(request, 'dashboard.html')
+
+
+
+
+
