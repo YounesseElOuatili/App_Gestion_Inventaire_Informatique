@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from .models import Produit, Site, Categorie, Utilisateur
 from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(login_url='/login/')
 def add_product(request):
     error_message = None
     success_message = None
@@ -45,6 +47,7 @@ def add_product(request):
         'success_message': success_message,
         'error_message': error_message,
     })
+@login_required(login_url='/login/')
 def list_products(request):
     categories = Categorie.objects.all()
     sites = Site.objects.all()
@@ -72,7 +75,7 @@ def list_products(request):
         'selected_filter_value': filter_value,
     })
 from django.http import JsonResponse
-
+@login_required(login_url='/login/')
 def get_filter_values(request):
     filter_type = request.GET.get('filter_type')
 
@@ -92,6 +95,7 @@ def get_filter_values(request):
 from django.shortcuts import render, redirect
 from .models import Utilisateur, Site  # Adjust according to your model names
 
+@login_required(login_url='/login/')
 def add_utilisateur(request):
     if request.method == 'POST':
         nom_util = request.POST.get('nom_util')
@@ -109,7 +113,7 @@ def add_utilisateur(request):
     
     return render(request, 'utilisateur.html', {'sites': Site.objects.all()})
 
-
+@login_required(login_url='/login/')
 def liste_utilisateurs(request):
     # Filtrage des utilisateurs par site
     site_id = request.GET.get('site')
@@ -135,7 +139,7 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.http import HttpResponse
 from .models import Produit, Categorie, Site, Utilisateur
-
+@login_required(login_url='/login/')
 def liste_produits_pdf(request):
     filter_type = request.GET.get('filter_type', '')
     filter_value = request.GET.get('filter_value', '')
