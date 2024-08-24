@@ -47,6 +47,16 @@ def add_product(request):
         'success_message': success_message,
         'error_message': error_message,
     })
+
+from django.http import JsonResponse
+from .models import Utilisateur
+
+def get_utilisateurs_par_site(request):
+    site_id = request.GET.get('site_id')
+    utilisateurs = Utilisateur.objects.filter(site_id=site_id).values('id', 'nom_util')
+    return JsonResponse(list(utilisateurs), safe=False)
+
+
 @login_required(login_url='/login/')
 def list_products(request):
     categories = Categorie.objects.all()
@@ -55,9 +65,11 @@ def list_products(request):
 
     filter_type = request.GET.get('filter_type')
     filter_value = request.GET.get('filter_value')
+    search_code = request.GET.get('search_code')
 
     produits = Produit.objects.all()
 
+    # Apply filtering based on the selected filter type and value
     if filter_type and filter_value:
         if filter_type == 'category':
             produits = produits.filter(categorie_id=filter_value)
@@ -66,6 +78,10 @@ def list_products(request):
         elif filter_type == 'utilisateur':
             produits = produits.filter(utilisateur_id=filter_value)
 
+    # Apply search by internal code
+    if search_code:
+        produits = produits.filter(code_interne__icontains=search_code)
+
     return render(request, 'liste_prod.html', {
         'produits': produits,
         'categories': categories,
@@ -73,7 +89,9 @@ def list_products(request):
         'utilisateurs': utilisateurs,
         'selected_filter_type': filter_type,
         'selected_filter_value': filter_value,
+        'search_code': search_code,  # Pass the search code to the template
     })
+
 from django.http import JsonResponse
 @login_required(login_url='/login/')
 def get_filter_values(request):
@@ -170,6 +188,8 @@ def liste_produits_pdf(request):
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     
     return response
+
+
 
 
 # stock/views.py

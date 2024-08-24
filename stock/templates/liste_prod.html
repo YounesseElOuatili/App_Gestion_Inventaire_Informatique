@@ -32,6 +32,10 @@
             <option value="utilisateur" {% if selected_filter_type == 'utilisateur' %}selected{% endif %}>Utilisateur</option>
         </select>
     </div>
+    <div class="form-group">
+        <label for="search_code">Rechercher par Code Interne:</label>
+        <input type="text" id="search_code" name="search_code" class="form-control" placeholder="Entrer le code interne" value="{{ request.GET.search_code }}">
+    </div>
     <div class="form-group" id="filter_value_container" {% if not selected_filter_type %}style="display: none;"{% endif %}>
         <label for="filter_value">Valeur:</label>
         <select id="filter_value" name="filter_value" class="form-control">
@@ -70,6 +74,9 @@
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Displaying the total number of products -->
+<p class="mt-4"><strong>Nombre total de produits: {{ produits|length }}</strong></p>
 {% endblock content %}
 
 {% block javascript %}
