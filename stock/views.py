@@ -67,7 +67,7 @@ def list_products(request):
     filter_type = request.GET.get('filter_type')
     filter_value = request.GET.get('filter_value')
     search_code = request.GET.get('search_code')
-    sort_by = request.GET.get('sort_by', 'code_interne')  # Default sorting by 'code_interne'
+    sort_by = request.GET.get('sort_by', 'utilisateur')  # Default sorting by 'code_interne'
 
     produits = Produit.objects.all()
 
@@ -164,10 +164,13 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.http import HttpResponse
 from .models import Produit, Categorie, Site, Utilisateur
+
+
 @login_required(login_url='/login/')
 def liste_produits_pdf(request):
     filter_type = request.GET.get('filter_type', '')
     filter_value = request.GET.get('filter_value', '')
+    sort_by = request.GET.get('sort_by', 'utilisateur')  # Récupérer le champ de tri
 
     # Filtrer les produits en fonction des paramètres de filtrage
     produits = Produit.objects.all()
@@ -178,6 +181,11 @@ def liste_produits_pdf(request):
         produits = produits.filter(site_id=filter_value)
     elif filter_type == 'utilisateur' and filter_value:
         produits = produits.filter(utilisateur_id=filter_value)
+
+    # Appliquer le triage si un critère de tri est spécifié
+    valid_sort_fields = ['code_interne', 'marque', 'categorie', 'site', 'utilisateur']
+    if sort_by in valid_sort_fields:
+        produits = produits.order_by(F(sort_by))
 
     template_path = 'export_pdf_template.html'
     context = {'produits': produits}
@@ -195,6 +203,7 @@ def liste_produits_pdf(request):
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     
     return response
+
 
 
 
