@@ -55,7 +55,13 @@
                 <td colspan="6">Aucun produit trouvé.</td>
             </tr>
             {% endfor %}
+                        <!-- Total row -->
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Nombre total de produits</td>
+                            <td style="font-weight: bold;">{{ produits|length }}</td>
+                        </tr>
         </tbody>
     </table>
+
 </body>
 </html>
