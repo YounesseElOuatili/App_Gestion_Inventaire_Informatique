@@ -50,6 +50,7 @@ def add_product(request):
 
 from django.http import JsonResponse
 from .models import Utilisateur
+from django.db.models import F
 
 def get_utilisateurs_par_site(request):
     site_id = request.GET.get('site_id')
@@ -66,6 +67,7 @@ def list_products(request):
     filter_type = request.GET.get('filter_type')
     filter_value = request.GET.get('filter_value')
     search_code = request.GET.get('search_code')
+    sort_by = request.GET.get('sort_by', 'code_interne')  # Default sorting by 'code_interne'
 
     produits = Produit.objects.all()
 
@@ -82,6 +84,10 @@ def list_products(request):
     if search_code:
         produits = produits.filter(code_interne__icontains=search_code)
 
+    valid_sort_fields = ['code_interne', 'marque', 'categorie', 'site', 'utilisateur']
+    if sort_by in valid_sort_fields:
+        produits = produits.order_by(F(sort_by))
+
     return render(request, 'liste_prod.html', {
         'produits': produits,
         'categories': categories,
@@ -90,6 +96,7 @@ def list_products(request):
         'selected_filter_type': filter_type,
         'selected_filter_value': filter_value,
         'search_code': search_code,  # Pass the search code to the template
+        'selected_sort_by': sort_by  # Pass the selected sort field to the template
     })
 
 from django.http import JsonResponse

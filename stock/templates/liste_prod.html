@@ -43,9 +43,20 @@
             <option value="">Tous</option>
         </select>
     </div>
+    <div class="form-group mt-3">
+        <label for="sort_by">Trier par:</label>
+        <select id="sort_by" name="sort_by" class="form-control">
+            <option value="code_interne" {% if selected_sort_by == 'code_interne' %}selected{% endif %}>Code Interne</option>
+            <option value="marque" {% if selected_sort_by == 'marque' %}selected{% endif %}>Marque</option>
+            <option value="categorie" {% if selected_sort_by == 'categorie' %}selected{% endif %}>Catégorie</option>
+            <option value="site" {% if selected_sort_by == 'site' %}selected{% endif %}>Site</option>
+            <option value="utilisateur" {% if selected_sort_by == 'utilisateur' %}selected{% endif %}>Utilisateur</option>
+        </select>
+    </div>
     <button type="submit" class="btn btn-primary">Filtrer</button>
     <a href="{% url 'liste_produits_pdf' %}?filter_type={{ selected_filter_type }}&filter_value={{ selected_filter_value }}" class="btn btn-secondary">Exporter en PDF</a>
 </form>
+
 
 <table class="table mt-4">
     <thead>
