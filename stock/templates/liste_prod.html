@@ -57,15 +57,18 @@
         <select id="sort_by" name="sort_by" class="form-control">
             <option value="code_interne" {% if selected_sort_by == 'code_interne' %}selected{% endif %}>Code Interne</option>
             <option value="marque" {% if selected_sort_by == 'marque' %}selected{% endif %}>Marque</option>
+            <option value="date_inventaire" {% if selected_sort_by == 'date_inventaire' %}selected{% endif %}>Date d'Inventaire</option>
             <option value="categorie" {% if selected_sort_by == 'categorie' %}selected{% endif %}>Catégorie</option>
             <option value="site" {% if selected_sort_by == 'site' %}selected{% endif %}>Site</option>
             <option value="utilisateur" {% if selected_sort_by == 'utilisateur' %}selected{% endif %}>Utilisateur</option>
+            <option value="valeur_achat" {% if selected_sort_by == 'valeur_achat' %}selected{% endif %}>Valeur Achat</option>
+            <option value="date_achat" {% if selected_sort_by == 'date_achat' %}selected{% endif %}>Date d'Achat</option>
+            <option value="etat" {% if selected_sort_by == 'etat' %}selected{% endif %}>État</option>
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Filtrer</button>
     <a href="{% url 'liste_produits_pdf' %}?filter_site={{ selected_filter_site }}&filter_category={{ selected_filter_category }}&filter_utilisateur={{ selected_filter_utilisateur }}&filter_marque={{ selected_filter_marque }}" class="btn btn-secondary">Exporter en PDF</a>
 </form>
-
 
 <table class="table mt-4">
     <thead>
@@ -76,6 +79,9 @@
             <th>Catégorie</th>
             <th>Site</th>
             <th>Utilisateur</th>
+            <th>Valeur Achat</th>
+            <th>Date d'Achat</th>
+            <th>État</th>
         </tr>
     </thead>
     <tbody>
@@ -87,10 +93,13 @@
                 <td>{{ produit.categorie.nom_cat }}</td>
                 <td>{{ produit.site.nom }}</td>
                 <td>{{ produit.utilisateur.nom_util }}</td>
+                <td>{{ produit.valeur_achat }}</td>
+                <td>{{ produit.date_achat|date:"d/m/Y" }}</td>
+                <td>{{ produit.etat }}</td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="6">Aucun produit trouvé.</td>
+                <td colspan="9">Aucun produit trouvé.</td>
             </tr>
         {% endfor %}
     </tbody>
@@ -125,9 +134,5 @@ document.getElementById('filter_site').addEventListener('change', function() {
 
 // Initialiser l'affichage si une valeur est déjà sélectionnée
 document.getElementById('filter_site').dispatchEvent(new Event('change'));
-
-
 </script>
 {% endblock javascript %}
-
-

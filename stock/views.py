@@ -16,6 +16,9 @@ def add_product(request):
         categorie_id = request.POST.get('categorie')
         utilisateur_id = request.POST.get('utilisateur')
         site_id = request.POST.get('site')
+        valeur_achat = request.POST.get('valeur_achat')
+        date_achat = request.POST.get('date_achat')
+        etat = request.POST.get('etat')
 
         categorie = Categorie.objects.get(id=categorie_id)
         utilisateur = Utilisateur.objects.get(id=utilisateur_id)
@@ -27,7 +30,10 @@ def add_product(request):
             date_inventaire=date_inventaire,
             categorie=categorie,
             utilisateur=utilisateur,
-            site=site
+            site=site,
+            valeur_achat=valeur_achat,
+            date_achat=date_achat,
+            etat=etat
         )
 
         try:
@@ -39,14 +45,17 @@ def add_product(request):
     sites = Site.objects.all()
     categories = Categorie.objects.all()
     utilisateurs = Utilisateur.objects.all()
+    etat_choices = Produit.ETAT_CHOICES
 
     return render(request, 'produit.html', {
         'sites': sites,
         'categories': categories,
         'utilisateurs': utilisateurs,
+        'etat_choices': etat_choices,
         'success_message': success_message,
         'error_message': error_message,
     })
+
 
 from django.http import JsonResponse
 from .models import Utilisateur
@@ -84,7 +93,8 @@ def list_products(request):
     if search_code:
         produits = produits.filter(code_interne__icontains=search_code)
 
-    valid_sort_fields = ['code_interne', 'marque', 'categorie', 'site', 'utilisateur']
+    # Apply sorting
+    valid_sort_fields = ['code_interne', 'marque', 'date_inventaire', 'categorie', 'site', 'utilisateur', 'valeur_achat', 'date_achat', 'etat']
     if sort_by in valid_sort_fields:
         produits = produits.order_by(F(sort_by))
 
@@ -169,33 +179,41 @@ from xhtml2pdf import pisa
 from io import BytesIO
 from django.http import HttpResponse
 from .models import Produit, Categorie, Site, Utilisateur
-
+from django.db.models import F
 
 @login_required(login_url='/login/')
 def liste_produits_pdf(request):
-    filter_type = request.GET.get('filter_type', '')
-    filter_value = request.GET.get('filter_value', '')
-    sort_by = request.GET.get('sort_by', 'utilisateur')  # Récupérer le champ de tri
+    # Récupérer les mêmes paramètres de filtrage que ceux utilisés dans list_products
+    filter_site = request.GET.get('filter_site')
+    filter_category = request.GET.get('filter_category')
+    filter_utilisateur = request.GET.get('filter_utilisateur')
+    search_code = request.GET.get('search_code')
+    sort_by = request.GET.get('sort_by', 'code_interne')  # Par défaut, trier par 'code_interne'
 
-    # Filtrer les produits en fonction des paramètres de filtrage
     produits = Produit.objects.all()
 
-    if filter_type == 'category' and filter_value:
-        produits = produits.filter(categorie_id=filter_value)
-    elif filter_type == 'site' and filter_value:
-        produits = produits.filter(site_id=filter_value)
-    elif filter_type == 'utilisateur' and filter_value:
-        produits = produits.filter(utilisateur_id=filter_value)
+    # Appliquer les filtres en fonction des paramètres
+    if filter_site:
+        produits = produits.filter(site_id=filter_site)
+        if filter_category:
+            produits = produits.filter(categorie_id=filter_category)
+        if filter_utilisateur:
+            produits = produits.filter(utilisateur_id=filter_utilisateur)
 
-    # Appliquer le triage si un critère de tri est spécifié
-    valid_sort_fields = ['code_interne', 'marque', 'categorie', 'site', 'utilisateur']
+    # Appliquer la recherche par code interne
+    if search_code:
+        produits = produits.filter(code_interne__icontains=search_code)
+
+    # Appliquer le tri
+    valid_sort_fields = ['code_interne', 'marque', 'date_inventaire', 'categorie', 'site', 'utilisateur', 'valeur_achat', 'date_achat', 'etat']
     if sort_by in valid_sort_fields:
         produits = produits.order_by(F(sort_by))
 
-    template_path = 'export_pdf_template.html'
+    # Passer les produits filtrés au template
     context = {'produits': produits}
 
     # Générer le PDF
+    template_path = 'export_pdf_template.html'
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="liste_produits.pdf"'
 
@@ -208,8 +226,6 @@ def liste_produits_pdf(request):
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     
     return response
-
-
 
 
 

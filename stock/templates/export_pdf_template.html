@@ -25,6 +25,34 @@
             margin-top: 20px; /* Ajoute un espace au-dessus du titre */
             margin-bottom: 20px; /* Ajoute un espace en dessous du titre */
         }
+        /* Style pour les colonnes spécifiques */
+        .code-interne {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .marque {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .date-inventaire {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .categorie {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .site {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .utilisateur {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .valeur-achat {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .date-achat {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
+        .etat {
+            width: 15%; /* Ajuster la largeur selon vos besoins */
+        }
     </style>
 </head>
 <body>
@@ -32,36 +60,41 @@
     <table>
         <thead>
             <tr>
-                <th>Code Interne</th>
-                <th>Marque</th>
-                <th>Date d'Inventaire</th>
-                <th>Catégorie</th>
-                <th>Site</th>
-                <th>Utilisateur</th>
+                <th class="code-interne">Code Interne</th>
+                <th class="marque">Marque</th>
+                <th class="date-inventaire">Date d'Inventaire</th>
+                <th class="categorie">Catégorie</th>
+                <th class="site">Site</th>
+                <th class="utilisateur">Utilisateur</th>
+                <th class="valeur-achat">Valeur Achat</th>
+                <th class="date-achat">Date d'Achat</th>
+                <th class="etat">État</th>
             </tr>
         </thead>
         <tbody>
             {% for produit in produits %}
             <tr>
-                <td>{{ produit.code_interne }}</td>
-                <td>{{ produit.marque }}</td>
-                <td>{{ produit.date_inventaire|date:"d/m/Y" }}</td>
-                <td>{{ produit.categorie.nom_cat }}</td>
-                <td>{{ produit.site.nom }}</td>
-                <td>{{ produit.utilisateur.nom_util }}</td>
+                <td class="code-interne">{{ produit.code_interne }}</td>
+                <td class="marque">{{ produit.marque }}</td>
+                <td class="date-inventaire">{{ produit.date_inventaire|date:"d/m/Y" }}</td>
+                <td class="categorie">{{ produit.categorie.nom_cat }}</td>
+                <td class="site">{{ produit.site.nom }}</td>
+                <td class="utilisateur">{{ produit.utilisateur.nom_util }}</td>
+                <td class="valeur-achat">{{ produit.valeur_achat }}</td>
+                <td class="date-achat">{{ produit.date_achat|date:"d/m/Y" }}</td>
+                <td class="etat">{{ produit.etat }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">Aucun produit trouvé.</td>
+                <td colspan="9">Aucun produit trouvé.</td>
             </tr>
             {% endfor %}
             <!-- Total row -->
             <tr>
-                <td colspan="5" style="text-align: right; font-weight: bold;">Nombre total de produits</td>
+                <td colspan="8" style="text-align: right; font-weight: bold;">Nombre total de produits</td>
                 <td style="font-weight: bold;">{{ produits|length }}</td>
             </tr>
         </tbody>
     </table>
-
 </body>
 </html>
