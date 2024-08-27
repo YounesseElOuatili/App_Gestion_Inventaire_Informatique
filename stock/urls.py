@@ -12,4 +12,5 @@ urlpatterns = [
     path('liste-produits-pdf/', views.liste_produits_pdf, name='liste_produits_pdf'),
     path('get_utilisateurs_par_site/', views.get_utilisateurs_par_site, name='get_utilisateurs_par_site'),
     
+    
 ]

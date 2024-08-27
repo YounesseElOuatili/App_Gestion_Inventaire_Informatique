@@ -63,22 +63,22 @@ def list_products(request):
     categories = Categorie.objects.all()
     sites = Site.objects.all()
     utilisateurs = Utilisateur.objects.all()
-
-    filter_type = request.GET.get('filter_type')
-    filter_value = request.GET.get('filter_value')
+    
+    filter_site = request.GET.get('filter_site')
+    filter_category = request.GET.get('filter_category')
+    filter_utilisateur = request.GET.get('filter_utilisateur')
     search_code = request.GET.get('search_code')
     sort_by = request.GET.get('sort_by', 'utilisateur')  # Default sorting by 'code_interne'
 
     produits = Produit.objects.all()
 
-    # Apply filtering based on the selected filter type and value
-    if filter_type and filter_value:
-        if filter_type == 'category':
-            produits = produits.filter(categorie_id=filter_value)
-        elif filter_type == 'site':
-            produits = produits.filter(site_id=filter_value)
-        elif filter_type == 'utilisateur':
-            produits = produits.filter(utilisateur_id=filter_value)
+    # Apply filtering based on the selected filter site
+    if filter_site:
+        produits = produits.filter(site_id=filter_site)
+        if filter_category:
+            produits = produits.filter(categorie_id=filter_category)
+        if filter_utilisateur:
+            produits = produits.filter(utilisateur_id=filter_utilisateur)
 
     # Apply search by internal code
     if search_code:
@@ -93,27 +93,32 @@ def list_products(request):
         'categories': categories,
         'sites': sites,
         'utilisateurs': utilisateurs,
-        'selected_filter_type': filter_type,
-        'selected_filter_value': filter_value,
-        'search_code': search_code,  # Pass the search code to the template
-        'selected_sort_by': sort_by  # Pass the selected sort field to the template
+        'selected_filter_site': filter_site,
+        'selected_filter_category': filter_category,
+        'selected_filter_utilisateur': filter_utilisateur,
+        'search_code': search_code,
+        'selected_sort_by': sort_by,
     })
+
 
 from django.http import JsonResponse
 @login_required(login_url='/login/')
 def get_filter_values(request):
     filter_type = request.GET.get('filter_type')
+    site_id = request.GET.get('site_id')
 
-    if filter_type == 'category':
-        data = list(Categorie.objects.values('id', 'nom_cat'))
+    if filter_type == 'category' and site_id:
+        data = list(Categorie.objects.filter(produit__site_id=site_id).distinct().values('id', 'nom_cat'))
     elif filter_type == 'site':
         data = list(Site.objects.values('id', 'nom'))
-    elif filter_type == 'utilisateur':
-        data = list(Utilisateur.objects.values('id', 'nom_util'))
+    elif filter_type == 'utilisateur' and site_id:
+        data = list(Utilisateur.objects.filter(site_id=site_id).values('id', 'nom_util'))
     else:
         data = []
 
     return JsonResponse(data, safe=False)
+
+
 
 # stock/views.py
 

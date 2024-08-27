@@ -28,19 +28,28 @@
         <input type="text" id="search_code" name="search_code" class="form-control" placeholder="Entrer le code interne" value="{{ request.GET.search_code }}">
     </div>
     <div class="form-group">
-        <label for="filter_type">Filtrer par:</label>
-        <select id="filter_type" name="filter_type" class="form-control">
-            <option value="">Sélectionner un filtre</option>
-            <option value="category" {% if selected_filter_type == 'category' %}selected{% endif %}>Catégorie</option>
-            <option value="site" {% if selected_filter_type == 'site' %}selected{% endif %}>Site</option>
-            <option value="utilisateur" {% if selected_filter_type == 'utilisateur' %}selected{% endif %}>Utilisateur</option>
+        <label for="filter_site">Site:</label>
+        <select id="filter_site" name="filter_site" class="form-control">
+            <option value="">Tous les sites</option>
+            {% for site in sites %}
+                <option value="{{ site.id }}" {% if selected_filter_site == site.id %}selected{% endif %}>{{ site.nom }}</option>
+            {% endfor %}
         </select>
     </div>
-
-    <div class="form-group" id="filter_value_container" {% if not selected_filter_type %}style="display: none;"{% endif %}>
-        <label for="filter_value">Valeur:</label>
-        <select id="filter_value" name="filter_value" class="form-control">
-            <option value="">Tous</option>
+    <div class="form-group">
+        <label for="filter_category">Catégorie:</label>
+        <select id="filter_category" name="filter_category" class="form-control">
+            <option value="">Toutes les catégories</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if selected_filter_category == category.id %}selected{% endif %}>{{ category.nom_cat }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="filter_utilisateur">Utilisateur:</label>
+        <select id="filter_utilisateur" name="filter_utilisateur" class="form-control">
+            <option value="">Tous les utilisateurs</option>
+            <!-- Les options seront remplies par JavaScript -->
         </select>
     </div>
     <div class="form-group mt-3">
@@ -54,7 +63,7 @@
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Filtrer</button>
-    <a href="{% url 'liste_produits_pdf' %}?filter_type={{ selected_filter_type }}&filter_value={{ selected_filter_value }}" class="btn btn-secondary">Exporter en PDF</a>
+    <a href="{% url 'liste_produits_pdf' %}?filter_site={{ selected_filter_site }}&filter_category={{ selected_filter_category }}&filter_utilisateur={{ selected_filter_utilisateur }}&filter_marque={{ selected_filter_marque }}" class="btn btn-secondary">Exporter en PDF</a>
 </form>
 
 
@@ -93,30 +102,32 @@
 
 {% block javascript %}
 <script>
-    document.getElementById('filter_type').addEventListener('change', function() {
-        var filterType = this.value;
-        var filterValueContainer = document.getElementById('filter_value_container');
-        var filterValueSelect = document.getElementById('filter_value');
+document.getElementById('filter_site').addEventListener('change', function() {
+    var siteId = this.value;
+    var utilisateurSelect = document.getElementById('filter_utilisateur');
 
-        filterValueContainer.style.display = filterType ? 'block' : 'none';
+    utilisateurSelect.innerHTML = '<option value="">Tous les utilisateurs</option>';  // Réinitialiser les options
 
-        filterValueSelect.innerHTML = '<option value="">Tous</option>';
+    if (siteId) {
+        fetch(`/stock/get_filter_values/?filter_type=utilisateur&site_id=${siteId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(item => {
+                    var option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.nom_util;
+                    utilisateurSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+});
 
-        if (filterType) {
-            fetch(`/stock/get_filter_values/?filter_type=${filterType}`)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(item => {
-                        var option = document.createElement('option');
-                        option.value = item.id;
-                        option.textContent = filterType === 'category' ? item.nom_cat : (filterType === 'site' ? item.nom : item.nom_util);
-                        filterValueSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    });
+// Initialiser l'affichage si une valeur est déjà sélectionnée
+document.getElementById('filter_site').dispatchEvent(new Event('change'));
 
-    document.getElementById('filter_type').dispatchEvent(new Event('change'));
+
 </script>
 {% endblock javascript %}
+
+
