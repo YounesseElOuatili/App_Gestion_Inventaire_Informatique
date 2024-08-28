@@ -66,8 +66,11 @@
             <option value="etat" {% if selected_sort_by == 'etat' %}selected{% endif %}>État</option>
         </select>
     </div>
-    <button type="submit" class="btn btn-primary">Filtrer</button>
-    <a href="{% url 'liste_produits_pdf' %}?filter_site={{ selected_filter_site }}&filter_category={{ selected_filter_category }}&filter_utilisateur={{ selected_filter_utilisateur }}&filter_marque={{ selected_filter_marque }}" class="btn btn-secondary">Exporter en PDF</a>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+        <a href="{% url 'liste_produits_pdf' %}?filter_site={{ selected_filter_site }}&filter_category={{ selected_filter_category }}&filter_utilisateur={{ selected_filter_utilisateur }}&filter_marque={{ selected_filter_marque }}" class="btn btn-secondary">Exporter en PDF</a>
+    </div>
 </form>
 
 <table class="table mt-4">
