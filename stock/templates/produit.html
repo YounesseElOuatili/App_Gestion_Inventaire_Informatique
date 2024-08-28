@@ -62,24 +62,24 @@
     </div>
     <div class="form-group">
         <label for="valeur_achat">Valeur d'Achat:</label>
-        <input type="number" step="0.01" id="valeur_achat" name="valeur_achat" class="form-control">
+        <input type="number" step="0.01" id="valeur_achat" name="valeur_achat" class="form-control" required>
     </div>
     <div class="form-group">
         <label for="date_achat">Date d'Achat:</label>
-        <input type="date" id="date_achat" name="date_achat" class="form-control">
+        <input type="date" id="date_achat" name="date_achat" class="form-control" required>
     </div>
     <div class="form-group">
         <label for="etat">État:</label>
-        <select id="etat" name="etat" class="form-control">
+        <select id="etat" name="etat" class="form-control" required>
             {% for etat_value, etat_label in etat_choices %}
                 <option value="{{ etat_value }}">{{ etat_label }}</option>
             {% endfor %}
         </select>
     </div>
     
-    
     <button type="submit" class="btn btn-primary">Ajouter</button>
 </form>
+
 
 {% if success_message %}
     <script>

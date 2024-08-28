@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Produit, Site, Categorie, Utilisateur
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 
 
 @login_required(login_url='/login/')
@@ -20,27 +21,35 @@ def add_product(request):
         date_achat = request.POST.get('date_achat')
         etat = request.POST.get('etat')
 
-        categorie = Categorie.objects.get(id=categorie_id)
-        utilisateur = Utilisateur.objects.get(id=utilisateur_id)
-        site = Site.objects.get(id=site_id)
+        # Vérifiez que tous les champs sont remplis
+        if not all([code_interne, marque, date_inventaire, categorie_id, utilisateur_id, site_id, valeur_achat, date_achat, etat]):
+            error_message = "Tous les champs doivent être remplis."
+        else:
+            try:
+                categorie = Categorie.objects.get(id=categorie_id)
+                utilisateur = Utilisateur.objects.get(id=utilisateur_id)
+                site = Site.objects.get(id=site_id)
 
-        produit = Produit(
-            code_interne=code_interne,
-            marque=marque,
-            date_inventaire=date_inventaire,
-            categorie=categorie,
-            utilisateur=utilisateur,
-            site=site,
-            valeur_achat=valeur_achat,
-            date_achat=date_achat,
-            etat=etat
-        )
+                produit = Produit(
+                    code_interne=code_interne,
+                    marque=marque,
+                    date_inventaire=date_inventaire,
+                    categorie=categorie,
+                    utilisateur=utilisateur,
+                    site=site,
+                    valeur_achat=valeur_achat,
+                    date_achat=date_achat,
+                    etat=etat
+                )
 
-        try:
-            produit.save()
-            success_message = "Produit ajouté avec succès !"
-        except IntegrityError:
-            error_message = "Ce code interne existe déjà. Veuillez en choisir un autre."
+                produit.save()
+                success_message = "Produit ajouté avec succès !"
+            except IntegrityError:
+                error_message = "Ce code interne existe déjà. Veuillez en choisir un autre."
+            except ValidationError as ve:
+                error_message = f"Erreur de validation: {ve}"
+            except Exception as e:
+                error_message = f"Une erreur est survenue: {e}"
 
     sites = Site.objects.all()
     categories = Categorie.objects.all()
