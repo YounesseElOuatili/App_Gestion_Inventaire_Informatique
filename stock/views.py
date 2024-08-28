@@ -86,7 +86,7 @@ def list_products(request):
     filter_category = request.GET.get('filter_category')
     filter_utilisateur = request.GET.get('filter_utilisateur')
     search_code = request.GET.get('search_code')
-    sort_by = request.GET.get('sort_by', 'site')  # Default sorting by 'code_interne'
+    sort_by = request.GET.get('sort_by', 'site')  # Default sorting by 'site'
 
     produits = Produit.objects.all()
 
