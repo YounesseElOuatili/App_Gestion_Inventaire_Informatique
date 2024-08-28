@@ -3,7 +3,7 @@ from .models import Produit, Site, Categorie, Utilisateur
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-
+from django.shortcuts import get_object_or_404
 
 @login_required(login_url='/login/')
 def add_product(request):
@@ -202,12 +202,17 @@ def liste_produits_pdf(request):
     produits = Produit.objects.all()
 
     # Appliquer les filtres en fonction des paramètres
+    selected_filter_site = None
+    selected_filter_category = None
+
     if filter_site:
         produits = produits.filter(site_id=filter_site)
-        if filter_category:
-            produits = produits.filter(categorie_id=filter_category)
-        if filter_utilisateur:
-            produits = produits.filter(utilisateur_id=filter_utilisateur)
+        selected_filter_site = get_object_or_404(Site, id=filter_site)
+    if filter_category:
+        produits = produits.filter(categorie_id=filter_category)
+        selected_filter_category = get_object_or_404(Categorie, id=filter_category)
+    if filter_utilisateur:
+        produits = produits.filter(utilisateur_id=filter_utilisateur)
 
     # Appliquer la recherche par code interne
     if search_code:
@@ -216,10 +221,14 @@ def liste_produits_pdf(request):
     # Appliquer le tri
     valid_sort_fields = ['code_interne', 'marque', 'date_inventaire', 'categorie', 'site', 'utilisateur', 'valeur_achat', 'date_achat', 'etat']
     if sort_by in valid_sort_fields:
-        produits = produits.order_by(F(sort_by))
+        produits = produits.order_by(sort_by)
 
-    # Passer les produits filtrés au template
-    context = {'produits': produits}
+    # Passer les produits filtrés ainsi que les informations du site et de la catégorie sélectionnés au template
+    context = {
+        'produits': produits,
+        'selected_filter_site': selected_filter_site,
+        'selected_filter_category': selected_filter_category,
+    }
 
     # Générer le PDF
     template_path = 'export_pdf_template.html'
@@ -235,7 +244,6 @@ def liste_produits_pdf(request):
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     
     return response
-
 
 
 # stock/views.py

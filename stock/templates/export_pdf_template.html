@@ -25,6 +25,12 @@
             margin-top: 20px; /* Ajoute un espace au-dessus du titre */
             margin-bottom: 20px; /* Ajoute un espace en dessous du titre */
         }
+        .filter-info {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
         /* Style pour les colonnes spécifiques */
         .code-interne {
             width: 15%; /* Ajuster la largeur selon vos besoins */
@@ -57,6 +63,12 @@
 </head>
 <body>
     <h1>Liste des Produits</h1>
+    <div class="filter-info">
+        Site: {{ selected_filter_site.nom }} 
+    </div>
+    <div class="filter-info">
+        Catégorie: {{ selected_filter_category.nom_cat }}
+    </div>
     <table>
         <thead>
             <tr>
