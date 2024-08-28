@@ -205,13 +205,13 @@ def liste_produits_pdf(request):
     selected_filter_site = None
     selected_filter_category = None
 
-    if filter_site:
+    if filter_site and filter_site != 'None':
         produits = produits.filter(site_id=filter_site)
         selected_filter_site = get_object_or_404(Site, id=filter_site)
-    if filter_category:
+    if filter_category and filter_category != 'None':
         produits = produits.filter(categorie_id=filter_category)
         selected_filter_category = get_object_or_404(Categorie, id=filter_category)
-    if filter_utilisateur:
+    if filter_utilisateur and filter_utilisateur != 'None':
         produits = produits.filter(utilisateur_id=filter_utilisateur)
 
     # Appliquer la recherche par code interne
@@ -244,7 +244,6 @@ def liste_produits_pdf(request):
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     
     return response
-
 
 # stock/views.py
 # views.py

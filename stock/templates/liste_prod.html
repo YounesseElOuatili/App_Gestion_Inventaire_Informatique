@@ -98,7 +98,7 @@
                 <td>{{ produit.utilisateur.nom_util }}</td>
                 <td>{{ produit.valeur_achat }}</td>
                 <td>{{ produit.date_achat|date:"d/m/Y" }}</td>
-                <td>{{ produit.etat }}</td>
+                <td>{{ produit.get_etat_display }}</td>
             </tr>
         {% empty %}
             <tr>
